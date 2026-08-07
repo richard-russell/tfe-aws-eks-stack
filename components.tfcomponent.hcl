@@ -64,7 +64,9 @@ component "tfe" {
   }
 
   providers = {
-    aws = provider.aws.this
+    aws   = provider.aws.this
+    local = provider.local.this
+    tls   = provider.tls.this
   }
 }
 
