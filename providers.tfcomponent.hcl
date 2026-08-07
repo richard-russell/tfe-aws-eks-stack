@@ -18,6 +18,9 @@ required_providers {
   }
 }
 
+provider "local" "this" {}
+provider "tls" "this" {}
+
 provider "aws" "this" {
   config {
     region = var.aws_region
