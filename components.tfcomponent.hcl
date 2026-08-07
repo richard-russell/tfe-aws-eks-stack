@@ -14,6 +14,7 @@ component "tfe" {
     friendly_name_prefix = var.friendly_name_prefix
     common_tags          = var.common_tags
     tfe_fqdn             = var.tfe_fqdn
+    create_helm_overrides_file = false
 
     # --- Networking --- #
     vpc_id           = var.upstream_networks.vpc_id
