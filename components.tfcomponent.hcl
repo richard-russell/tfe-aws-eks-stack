@@ -71,6 +71,76 @@ component "tfe" {
   }
 }
 
+output "helm_overrides" {
+  description = "Rendered Helm overrides values for the TFE operator chart. Equivalent to the module's generated helm_overrides_values.yaml."
+  value = templatestring(
+    <<-EOT
+    replicaCount: 3
+    tls:
+      certificateSecret: <tfe-certs>
+      caCertData: |
+        <base64-encoded TFE CA bundle>
+
+    image:
+      repository: images.releases.hashicorp.com
+      name: hashicorp/terraform-enterprise
+      tag: <TAG>
+
+    serviceAccount:
+      enabled: true
+      name: tfe
+
+    tfe:
+      privateHttpPort: 8080
+      privateHttpsPort: 8443
+      metrics:
+        enable: true
+        httpPort: 9090
+        httpsPort: 9091
+
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: "nlb-ip"
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+        service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+        service.beta.kubernetes.io/aws-load-balancer-security-groups: $${tfe_lb_sg}
+        service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "https"
+        service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/api/v1/health/readiness"
+        service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "8443"
+      type: LoadBalancer
+      port: 443
+
+    env:
+      secretRefs:
+        - name: <tfe-secrets>
+      variables:
+        TFE_HOSTNAME: $${tfe_hostname}
+        TFE_DATABASE_HOST: $${tfe_database_host}
+        TFE_DATABASE_NAME: tfe
+        TFE_DATABASE_USER: tfe
+        TFE_DATABASE_PARAMETERS: sslmode=require
+        TFE_OBJECT_STORAGE_TYPE: s3
+        TFE_OBJECT_STORAGE_S3_BUCKET: $${s3_bucket}
+        TFE_OBJECT_STORAGE_S3_REGION: eu-west-1
+        TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE: "true"
+        TFE_OBJECT_STORAGE_S3_SERVER_SIDE_ENCRYPTION: AES256
+        TFE_OBJECT_STORAGE_S3_SERVER_SIDE_ENCRYPTION_KMS_KEY_ID: ""
+        TFE_REDIS_HOST: $${tfe_redis_host}
+        TFE_REDIS_USE_AUTH: "true"
+        TFE_REDIS_USE_TLS: "true"
+    EOT
+    ,
+    {
+      tfe_lb_sg       = component.tfe.tfe_lb_security_group_id
+      tfe_hostname    = var.tfe_fqdn
+      tfe_database_host = component.tfe.tfe_database_host
+      s3_bucket       = component.tfe.s3_bucket_name
+      tfe_redis_host  = component.tfe.elasticache_replication_group_primary_endpoint_address
+    }
+  )
+  type        = string
+}
+
 output "tfe_url" {
   value       = component.tfe.tfe_url
   type        = string
