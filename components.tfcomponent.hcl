@@ -26,6 +26,7 @@ component "tfe" {
     # --- EKS cluster --- #
     create_eks_cluster                     = true
     eks_cluster_endpoint_public_access     = true
+    eks_cluster_public_access_cidrs        = ["0.0.0.0/0"]
     eks_nodegroup_instance_type            = "m7i.2xlarge"
     eks_nodegroup_scaling_config = {
       desired_size = 3
