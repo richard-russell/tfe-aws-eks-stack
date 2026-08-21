@@ -1,12 +1,6 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-# --- EKS cluster auth token --- #
-
-data "aws_eks_cluster_auth" "tfe" {
-  name = var.eks_cluster_name
-}
-
 # --- Read secrets from AWS Secrets Manager --- #
 
 data "aws_secretsmanager_secret_version" "tfe_license" {
