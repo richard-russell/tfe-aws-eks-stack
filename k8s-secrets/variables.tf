@@ -1,3 +1,8 @@
+variable "eks_cluster_name" {
+  type        = string
+  description = "Name of the EKS cluster, used to obtain a Kubernetes auth token."
+}
+
 variable "tfe_namespace" {
   type        = string
   description = "Kubernetes namespace where TFE will be deployed."

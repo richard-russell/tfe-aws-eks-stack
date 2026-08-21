@@ -76,6 +76,7 @@ component "k8s-secrets" {
   source = "./k8s-secrets"
 
   inputs = {
+    eks_cluster_name                   = component.tfe.eks_cluster_name
     tfe_license_secret_arn             = var.upstream_secrets.tfe_license_secret_arn
     tfe_encryption_password_secret_arn = var.upstream_secrets.tfe_encryption_password_secret_arn
     tfe_database_password_secret_arn   = var.upstream_secrets.tfe_database_password_secret_arn
