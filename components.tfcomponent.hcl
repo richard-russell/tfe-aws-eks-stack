@@ -72,6 +72,26 @@ component "tfe" {
   }
 }
 
+component "k8s-secrets" {
+  source = "./k8s-secrets"
+
+  inputs = {
+    tfe_license_secret_arn             = var.upstream_secrets.tfe_license_secret_arn
+    tfe_encryption_password_secret_arn = var.upstream_secrets.tfe_encryption_password_secret_arn
+    tfe_database_password_secret_arn   = var.upstream_secrets.tfe_database_password_secret_arn
+    tfe_redis_password_secret_arn      = var.upstream_secrets.tfe_redis_password_secret_arn
+    tfe_tls_cert_secret_arn            = var.upstream_pki.tfe_tls_cert_secret_arn
+    tfe_tls_privkey_secret_arn         = var.upstream_pki.tfe_tls_privkey_secret_arn
+  }
+
+  providers = {
+    aws        = provider.aws.this
+    kubernetes = provider.kubernetes.this
+  }
+
+  depends_on = [component.tfe]
+}
+
 output "helm_overrides" {
   description = "Rendered Helm overrides values for the TFE operator chart. Equivalent to the module's generated helm_overrides_values.yaml."
   value = <<-EOT
@@ -154,4 +174,16 @@ output "tfe_database_host" {
   value       = component.tfe.tfe_database_host
   type        = string
   description = "RDS Aurora endpoint for TFE Helm chart values."
+}
+
+output "eks_cluster_endpoint" {
+  value       = component.tfe.eks_cluster_endpoint
+  type        = string
+  description = "EKS cluster API endpoint."
+}
+
+output "eks_cluster_certificate_authority_data" {
+  value       = component.tfe.eks_cluster_certificate_authority_data
+  type        = string
+  description = "Base64-encoded certificate authority data for the TFE EKS cluster."
 }
