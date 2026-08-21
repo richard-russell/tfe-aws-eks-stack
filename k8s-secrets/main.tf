@@ -27,6 +27,10 @@ data "aws_secretsmanager_secret_version" "tfe_tls_privkey" {
   secret_id = var.tfe_tls_privkey_secret_arn
 }
 
+data "aws_secretsmanager_secret_version" "tfe_tls_ca_bundle" {
+  secret_id = var.tfe_tls_ca_bundle_secret_arn
+}
+
 # --- Kubernetes namespace --- #
 
 resource "kubernetes_namespace" "tfe" {
@@ -90,4 +94,12 @@ resource "kubernetes_secret" "tfe_certs" {
     "tls.crt" = base64decode(data.aws_secretsmanager_secret_version.tfe_tls_cert.secret_string)
     "tls.key" = base64decode(data.aws_secretsmanager_secret_version.tfe_tls_privkey.secret_string)
   }
+}
+
+# --- Outputs --- #
+
+output "tfe_ca_bundle" {
+  description = "PEM-encoded TFE CA bundle, decoded from base64 Secrets Manager value."
+  value       = base64decode(data.aws_secretsmanager_secret_version.tfe_tls_ca_bundle.secret_string)
+  sensitive   = true
 }

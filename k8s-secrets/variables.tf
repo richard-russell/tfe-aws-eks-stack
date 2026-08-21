@@ -33,3 +33,8 @@ variable "tfe_tls_privkey_secret_arn" {
   type        = string
   description = "ARN of Secrets Manager secret containing the base64-encoded TFE TLS private key."
 }
+
+variable "tfe_tls_ca_bundle_secret_arn" {
+  type        = string
+  description = "ARN of Secrets Manager secret containing the base64-encoded TFE TLS CA bundle."
+}

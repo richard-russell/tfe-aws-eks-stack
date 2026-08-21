@@ -22,6 +22,7 @@ deployment "development" {
     common_tags          = { owner = "Richard Russell", stack = "tfe-eks" }
     friendly_name_prefix = "eks"
     tfe_fqdn             = "eks-tfe.richard-russell.sbx.hashidemos.io"
+    tfe_image_tag        = "v2.0.5"
 
     upstream_networks = upstream_input.tfe-eks-prereqs.development_networks
     upstream_secrets  = upstream_input.tfe-eks-prereqs.development_secrets

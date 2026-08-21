@@ -96,6 +96,7 @@ component "k8s-secrets" {
     tfe_redis_password_secret_arn      = var.upstream_secrets.tfe_redis_password_secret_arn
     tfe_tls_cert_secret_arn            = var.upstream_pki.tfe_tls_cert_secret_arn
     tfe_tls_privkey_secret_arn         = var.upstream_pki.tfe_tls_privkey_secret_arn
+    tfe_tls_ca_bundle_secret_arn       = var.upstream_pki.tfe_tls_ca_bundle_secret_arn
   }
 
   providers = {
@@ -108,17 +109,18 @@ component "k8s-secrets" {
 
 output "helm_overrides" {
   description = "Rendered Helm overrides values for the TFE operator chart. Equivalent to the module's generated helm_overrides_values.yaml."
+  sensitive   = true
   value = <<-EOT
     replicaCount: 3
     tls:
-      certificateSecret: <tfe-certs>
+      certificateSecret: tfe-certs
       caCertData: |
-        <base64-encoded TFE CA bundle>
+        ${indent(8, component.k8s-secrets.tfe_ca_bundle)}
 
     image:
       repository: images.releases.hashicorp.com
       name: hashicorp/terraform-enterprise
-      tag: <TAG>
+      tag: ${var.tfe_image_tag}
 
     serviceAccount:
       enabled: true
@@ -146,7 +148,7 @@ output "helm_overrides" {
 
     env:
       secretRefs:
-        - name: <tfe-secrets>
+        - name: tfe-secrets
       variables:
         TFE_HOSTNAME: ${var.tfe_fqdn}
         TFE_DATABASE_HOST: ${component.tfe.tfe_database_host}

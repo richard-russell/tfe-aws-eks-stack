@@ -52,6 +52,11 @@ variable "upstream_secrets" {
   })
 }
 
+variable "tfe_image_tag" {
+  type        = string
+  description = "TFE container image tag (version) to deploy, e.g. 'v202501-1'."
+}
+
 variable "upstream_pki" {
   description = "TLS/PKI secret ARNs from prereqs stack."
   type = object({
