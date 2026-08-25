@@ -7,8 +7,10 @@ locals {
 }
 
 component "tfe" {
-  source  = "hashicorp/terraform-enterprise-eks-hvd/aws"
-  version = "0.2.0"
+#  source  = "hashicorp/terraform-enterprise-eks-hvd/aws"
+#  version = "0.2.0"
+  source  = "app.terraform.io/richard-russell-org/terrafom-enterprise-eks-hvd/aws"
+  version = "0.2.1"
 
   inputs = {
     friendly_name_prefix = var.friendly_name_prefix
