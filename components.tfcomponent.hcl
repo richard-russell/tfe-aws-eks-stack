@@ -148,6 +148,13 @@ output "helm_overrides" {
       type: LoadBalancer
       port: 443
 
+    agentWorkerPodTemplate:
+      spec:
+        hostAliases:
+          - ip: "172.20.254.107"
+            hostnames:
+              - "${var.tfe_fqdn}"
+
     env:
       secretRefs:
         - name: tfe-secrets
